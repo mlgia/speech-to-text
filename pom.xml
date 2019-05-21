@@ -42,10 +42,16 @@
 			<artifactId>lombok</artifactId>
 		</dependency>
 
+<!-- 		<dependency> -->
+<!-- 		    <groupId>com.ibm.watson.developer_cloud</groupId> -->
+<!-- 		    <artifactId>speech-to-text</artifactId> -->
+<!-- 		    <version>3.4.0</version> -->
+<!-- 		</dependency> -->
+		
 		<dependency>
-		    <groupId>com.ibm.watson.developer_cloud</groupId>
-		    <artifactId>speech-to-text</artifactId>
-		    <version>3.4.0</version>
+		  <groupId>com.ibm.watson</groupId>
+		  <artifactId>speech-to-text</artifactId>
+		  <version>7.0.0</version>
 		</dependency>
 
 		<dependency>

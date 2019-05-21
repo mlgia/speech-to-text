@@ -44,7 +44,6 @@ public class SpeechToTextController    {
     	return sMensajeInfo;
     }
 
-
     @RequestMapping(value = "/converter", method = RequestMethod.POST)
     public @ResponseBody String upload(@RequestParam(value = "audiofile")MultipartFile file){
 
@@ -54,9 +53,9 @@ public class SpeechToTextController    {
             File audio = convert(file);
 
             transcripcion = speach.getText(audio);
-            //Se elimina el fichero
+            
             audio.delete();
-          return transcripcion;
+            return transcripcion;
         }catch (IOException e){
             log.error("Gettin Transcription of File "+ file.getOriginalFilename()+" failed !" + e.getMessage());
             return "";
@@ -89,9 +88,7 @@ public class SpeechToTextController    {
         }
     }
 
-
-    public File convert(MultipartFile file) throws IOException
-    {
+    public File convert(MultipartFile file) throws IOException {
         File convFile = new File(file.getOriginalFilename());
         convFile.createNewFile();
         FileOutputStream fos = new FileOutputStream(convFile);

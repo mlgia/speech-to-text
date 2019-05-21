@@ -1,13 +1,15 @@
 package es.accenture.mlgia.watson;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
-import com.ibm.watson.developer_cloud.speech_to_text.v1.model.RecognizeOptions;
-import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
+import com.ibm.cloud.sdk.core.service.security.IamOptions;
+import com.ibm.watson.speech_to_text.v1.SpeechToText;
+import com.ibm.watson.speech_to_text.v1.model.RecognizeOptions;
+import com.ibm.watson.speech_to_text.v1.model.SpeechRecognitionResults;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -16,38 +18,48 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class SpeechToTextMlgia {
 
-	@Value("${watson.speech.to.text.username}")
-	@Getter
-	private String usuario;
-
-	@Value("${watson.speech.to.text.password}")
-	@Getter
-	private String password;
-	
-	@Value("${language.model}")
-	private String languageModel;
-
 	SpeechToText speechService;
+	
+	@Value("${watson.apikey}")
+	@Getter
+	private String apikey;
+	
+	@Value("${watson.endpoint}")
+	@Getter
+	private String endpoint;
 
 	public String getText(File audioFile) {
 		String salida = "";
-
-		speechService = new SpeechToText();
-		speechService.setUsernameAndPassword(usuario, password);
 		
-		SpeechResults result = speechService.recognize(audioFile, getRecognizeOptions()).execute();
-		log.debug("Texto:" + result.getResults().get(0).getAlternatives().get(0).getTranscript());
-		salida = result.getResults().get(0).getAlternatives().get(0).getTranscript();
+		IamOptions options = new IamOptions.Builder()
+			    .apiKey(apikey)
+			    .build();
+		
+		speechService = new SpeechToText(options);
+		speechService.setEndPoint(endpoint);
+		
+		RecognizeOptions recognizeOptions;
+		try {
+			recognizeOptions = new RecognizeOptions.Builder()
+				    .audio(audioFile)
+				    .contentType(RecognizeOptions.ContentType.AUDIO_WAV)
+				    .interimResults(true)
+					.inactivityTimeout(2000)
+					.model(RecognizeOptions.Model.ES_ES_BROADBANDMODEL)
+				    //.keywords(Arrays.asList("colorado", "tornado", "tornadoes"))
+				    //.keywordsThreshold((float) 0.5)
+				    .maxAlternatives(1)
+				    .build();
+					
+			SpeechRecognitionResults speechRecognitionResults = speechService.recognize(recognizeOptions).execute().getResult();
+			
+			log.debug("Texto:" + speechRecognitionResults.getResults().get(0).getAlternatives().get(0).getTranscript());
+			salida = speechRecognitionResults.getResults().get(0).getAlternatives().get(0).getTranscript();
+						
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 		
 		return salida;
-	}
-
-	private RecognizeOptions getRecognizeOptions() {
-		return new RecognizeOptions.Builder()
-				.continuous(true)
-				.model(languageModel)
-				.interimResults(true)
-				.inactivityTimeout(2000)
-				.build();
 	}
 }
