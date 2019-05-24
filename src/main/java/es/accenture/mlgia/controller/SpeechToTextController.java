@@ -72,15 +72,9 @@ public class SpeechToTextController    {
             Path path = Paths.get("decoded.wav");
             Files.write(path, decoded);
             
-            //numFiles++;
-            
             File decodedFile = new File("decoded.wav");
-            //File audio = convert(decodedFile);
 
             transcripcion = speach.getText(decodedFile);
-            //Se elimina el fichero
-//            audio.delete();
-            //decodedFile.delete();
           return transcripcion;
         }catch (IOException e){
             log.error("Gettin Transcription failed !" + e.getMessage());

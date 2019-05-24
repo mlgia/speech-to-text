@@ -46,15 +46,17 @@ public class SpeechToTextMlgia {
 				    .interimResults(true)
 					.inactivityTimeout(2000)
 					.model(RecognizeOptions.Model.ES_ES_BROADBANDMODEL)
-				    //.keywords(Arrays.asList("colorado", "tornado", "tornadoes"))
-				    //.keywordsThreshold((float) 0.5)
 				    .maxAlternatives(1)
 				    .build();
 					
 			SpeechRecognitionResults speechRecognitionResults = speechService.recognize(recognizeOptions).execute().getResult();
 			
-			log.debug("Texto:" + speechRecognitionResults.getResults().get(0).getAlternatives().get(0).getTranscript());
-			salida = speechRecognitionResults.getResults().get(0).getAlternatives().get(0).getTranscript();
+			if (speechRecognitionResults.getResults().size() > 0) {
+				if (speechRecognitionResults.getResults().get(0).getAlternatives().size() > 0) {
+					salida = speechRecognitionResults.getResults().get(0).getAlternatives().get(0).getTranscript();
+				}
+			}
+			log.debug("Salida:" + salida);
 						
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
